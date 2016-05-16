@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "name": "nanbando/mysql",
+    "bindings": {
+        "94e96817-d9d3-4be7-b287-83e923cca361": {
+            "_class": "Puli\\Discovery\\Binding\\ClassBinding",
+            "class": "Nanbando\\Plugin\\Mysql\\NanbandoMysqlBundle",
+            "type": "nanbando/bundle"
+        }
+    }
+}
