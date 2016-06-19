@@ -6,9 +6,8 @@ use League\Flysystem\Filesystem;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Database\ReadonlyDatabase;
 use Nanbando\Core\Plugin\PluginInterface;
-use Nanbando\Core\Temporary\TemporaryFileManager;
+use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Process\Process;
 
@@ -20,17 +19,18 @@ class MysqlPlugin implements PluginInterface
     private $output;
 
     /**
-     * @var TemporaryFileManager
+     * @var TemporaryFilesystemInterface
      */
-    private $temporaryFileManager;
+    private $temporaryFileSystem;
 
     /**
      * @param OutputInterface $output
+     * @param TemporaryFilesystemInterface $temporaryFileSystem
      */
-    public function __construct(OutputInterface $output, TemporaryFileManager $temporaryFileManager)
+    public function __construct(OutputInterface $output, TemporaryFilesystemInterface $temporaryFileSystem)
     {
         $this->output = $output;
-        $this->temporaryFileManager = $temporaryFileManager;
+        $this->temporaryFileSystem = $temporaryFileSystem;
     }
 
     /**
@@ -46,7 +46,7 @@ class MysqlPlugin implements PluginInterface
      */
     public function backup(Filesystem $source, Filesystem $destination, Database $database, array $parameter)
     {
-        $tempFile = $this->temporaryFileManager->getFilename('mysql');
+        $tempFile = $this->temporaryFileSystem->createTemporaryFile('mysql');
         $process = new Process(
             $this->getExportCommand(
                 $parameter['username'],
@@ -87,7 +87,7 @@ class MysqlPlugin implements PluginInterface
         ReadonlyDatabase $database,
         array $parameter
     ) {
-        $tempFile = $this->temporaryFileManager->getFilename('mysql');
+        $tempFile = $this->temporaryFileSystem->createTemporaryFile('mysql');
         file_put_contents($tempFile, $source->read('dump.sql'));
 
         $process = new Process(
