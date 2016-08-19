@@ -134,7 +134,7 @@ class MysqlPlugin implements PluginInterface
         return sprintf(
             'mysqldump -u%s %s %s > %s',
             $username,
-            isset($password) ? ('-p' . ($hidePassword ? '***' : "'".addcslashes($password, "'")."'")) : '',
+            isset($password) ? ('-p' . ($hidePassword ? '***' : "'" . addcslashes($password, "'") . "'")) : '',
             $database,
             $file
         );
