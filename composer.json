@@ -7,6 +7,12 @@
     },
     "require-dev": {
         "nanbando/core": "^0.1|dev-master",
+        "dflydev/embedded-composer": "@dev",
+        "puli/repository": "@dev",
+        "puli/discovery": "@dev",
+        "puli/url-generator": "@dev",
+        "puli/manager": "@dev",
+
         "phpunit/phpunit": "^5.3"
     },
     "autoload": {

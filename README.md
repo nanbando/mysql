@@ -17,7 +17,9 @@ You can install this plugin by adding `nanbando/mysql` to the `require`-section 
             "parameter": {
                 "username": "root",
                 "password": "***",
-                "database": "your_database"
+                "database": "your_database",
+                "host": "127.0.0.1",
+                "port": "3306"
             }
         }
     },

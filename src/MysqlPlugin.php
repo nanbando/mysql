@@ -38,7 +38,10 @@ class MysqlPlugin implements PluginInterface
      */
     public function configureOptionsResolver(OptionsResolver $optionsResolver)
     {
-        $optionsResolver->setRequired(['username', 'database'])->setDefault('password', null);
+        $optionsResolver->setRequired(['username', 'database'])
+            ->setDefault('password', null)
+            ->setDefault('host', null)
+            ->setDefault('port', null);
     }
 
     /**
@@ -46,15 +49,12 @@ class MysqlPlugin implements PluginInterface
      */
     public function backup(Filesystem $source, Filesystem $destination, Database $database, array $parameter)
     {
-        $tempFile = $this->temporaryFileSystem->createTemporaryFile('mysql');
-        $process = new Process(
-            $this->getExportCommand(
-                $parameter['username'],
-                $parameter['password'],
-                $parameter['database'],
-                $tempFile
-            )
+        $this->output->writeln(
+            sprintf('  * <comment>%s</comment>', $this->getExportCommand($parameter, 'dump.sql', true))
         );
+
+        $tempFile = $this->temporaryFileSystem->createTemporaryFile('mysql');
+        $process = new Process($this->getExportCommand($parameter, $tempFile));
         $process->run();
 
         while ($process->isRunning()) {
@@ -64,18 +64,6 @@ class MysqlPlugin implements PluginInterface
         $handler = fopen($tempFile, 'r');
         $destination->putStream('dump.sql', $handler);
         fclose($handler);
-        $this->output->writeln(
-            sprintf(
-                '  * <comment>%s</comment>',
-                $this->getExportCommand(
-                    $parameter['username'],
-                    $parameter['password'],
-                    $parameter['database'],
-                    'dump.sql',
-                    true
-                )
-            )
-        );
     }
 
     /**
@@ -87,54 +75,44 @@ class MysqlPlugin implements PluginInterface
         ReadonlyDatabase $database,
         array $parameter
     ) {
+        $this->output->writeln(
+            sprintf('  * <comment>%s</comment>', $this->getImportCommand($parameter, 'dump.sql', true))
+        );
+
         $tempFile = $this->temporaryFileSystem->createTemporaryFile('mysql');
         file_put_contents($tempFile, $source->read('dump.sql'));
 
-        $process = new Process(
-            $this->getImportCommand(
-                $parameter['username'],
-                $parameter['password'],
-                $parameter['database'],
-                $tempFile
-            )
-        );
+        $process = new Process($this->getImportCommand($parameter, $tempFile));
         $process->run();
 
         while ($process->isRunning()) {
             // waiting for process to finish
         }
-
-        $this->output->writeln(
-            sprintf(
-                '  * <comment>%s</comment>',
-                $this->getImportCommand(
-                    $parameter['username'],
-                    $parameter['password'],
-                    $parameter['database'],
-                    'dump.sql',
-                    true
-                )
-            )
-        );
     }
 
     /**
      * Returns command to export database.
      *
-     * @param string $username
-     * @param string $password
-     * @param string $database
+     * @param array $parameter
      * @param string $file
      * @param bool $hidePassword
      *
      * @return string
      */
-    private function getExportCommand($username, $password, $database, $file, $hidePassword = false)
+    private function getExportCommand(array $parameter, $file, $hidePassword = false)
     {
+        $username = $parameter['username'];
+        $password = $parameter['password'];
+        $database = $parameter['database'];
+        $host = $parameter['host'];
+        $port = $parameter['port'];
+
         return sprintf(
-            'mysqldump -u%s %s %s > %s',
+            'mysqldump -u%s%s%s%s %s > %s',
             $username,
-            isset($password) ? ('-p' . ($hidePassword ? '***' : "'" . addcslashes($password, "'") . "'")) : '',
+            isset($password) ? (' -p' . ($hidePassword ? '***' : "'" . addcslashes($password, "'") . "'")) : '',
+            isset($host) ? (' -h ' . $host) : '',
+            isset($port) ? (' -P ' . $port) : '',
             $database,
             $file
         );
@@ -143,20 +121,26 @@ class MysqlPlugin implements PluginInterface
     /**
      * Returns command to import database.
      *
-     * @param string $username
-     * @param string $password
-     * @param string $database
+     * @param array $parameter
      * @param string $file
      * @param bool $hidePassword
      *
      * @return string
      */
-    private function getImportCommand($username, $password, $database, $file, $hidePassword = false)
+    private function getImportCommand(array $parameter, $file, $hidePassword = false)
     {
+        $username = $parameter['username'];
+        $password = $parameter['password'];
+        $database = $parameter['database'];
+        $host = $parameter['host'];
+        $port = $parameter['port'];
+
         return sprintf(
-            'mysql -u%s%s %s < %s',
+            'mysql -u%s%s%s%s %s < %s',
             $username,
             isset($password) ? (' -p' . ($hidePassword ? '***' : $password)) : '',
+            isset($host) ? (' -h ' . $host) : '',
+            isset($port) ? (' -P ' . $port) : '',
             $database,
             $file
         );
