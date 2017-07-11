@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.2.0](https://github.com/nanbando/mysql/tree/0.2.0) (2017-07-11)
+[Full Changelog](https://github.com/nanbando/mysql/compare/0.1.1...0.2.0)
+
+**Merged pull requests:**
+
+- Added additional host and port parameter [\#5](https://github.com/nanbando/mysql/pull/5) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.1.1](https://github.com/nanbando/mysql/tree/0.1.1) (2016-08-19)
 [Full Changelog](https://github.com/nanbando/mysql/compare/0.1.0...0.1.1)
 
