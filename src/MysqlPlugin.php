@@ -146,7 +146,7 @@ class MysqlPlugin implements PluginInterface
             isset($password) ? (' -p' . ($hidePassword ? '***' : $password)) : '',
             isset($host) ? (' -h ' . $host) : '',
             isset($port) ? (' -P ' . $port) : '',
-            isset($options) ? $options : '',
+            isset($options) ? (' ' . $options) : '',
             $database,
             $file
         );
