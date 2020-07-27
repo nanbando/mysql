@@ -41,7 +41,9 @@ class MysqlPlugin implements PluginInterface
         $optionsResolver->setRequired(['username', 'database'])
             ->setDefault('password', null)
             ->setDefault('host', null)
-            ->setDefault('port', null);
+            ->setDefault('port', null)
+            ->setDefault('exportOptions', null)
+            ->setDefault('importOptions', null);
     }
 
     /**
@@ -106,13 +108,15 @@ class MysqlPlugin implements PluginInterface
         $database = $parameter['database'];
         $host = $parameter['host'];
         $port = $parameter['port'];
+        $options = $parameter['exportOptions'];
 
         return sprintf(
-            'mysqldump -u%s%s%s%s %s > %s',
+            'mysqldump -u%s%s%s%s%s %s > %s',
             $username,
             isset($password) ? (' -p' . ($hidePassword ? '***' : "'" . addcslashes($password, "'") . "'")) : '',
             isset($host) ? (' -h ' . $host) : '',
             isset($port) ? (' -P ' . $port) : '',
+            isset($options) ? (' ' . $options) : '',
             $database,
             $file
         );
@@ -134,13 +138,15 @@ class MysqlPlugin implements PluginInterface
         $database = $parameter['database'];
         $host = $parameter['host'];
         $port = $parameter['port'];
+        $options = $parameter['importOptions'];
 
         return sprintf(
-            'mysql -u%s%s%s%s %s < %s',
+            'mysql -u%s%s%s%s%s %s < %s',
             $username,
             isset($password) ? (' -p' . ($hidePassword ? '***' : $password)) : '',
             isset($host) ? (' -h ' . $host) : '',
             isset($port) ? (' -P ' . $port) : '',
+            isset($options) ? (' ' . $options) : '',
             $database,
             $file
         );
