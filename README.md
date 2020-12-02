@@ -29,6 +29,25 @@ You can install this plugin by adding `nanbando/mysql` to the `require`-section 
 }
 ```
 
+As an alternative you can use the environment variable of Doctrine DBAL:
+
+```json
+{
+    "name": "application",
+    "backup": {
+        "your_database": {
+            "plugin": "mysql",
+            "parameter": {
+                "databaseUrl": "%env(DATABASE_URL)%"
+            }
+        }
+    },
+    "require": {
+        "nanbando/mysql": "^0.1"
+    }
+}
+```
+
 ## Documentation
 
 See the official documentation on [nanbando.readthedocs.io/en/latest/plugins/index.html](https://nanbando.readthedocs.io/en/latest/plugins/index.html).

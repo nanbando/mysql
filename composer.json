@@ -7,9 +7,7 @@
     },
     "require-dev": {
         "nanbando/core": "^0.1|dev-master",
-        "dflydev/embedded-composer": "@dev",
-
-        "phpunit/phpunit": "^5.3"
+        "dflydev/embedded-composer": "@dev"
     },
     "autoload": {
         "psr-4": {

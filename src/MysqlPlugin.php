@@ -8,6 +8,8 @@ use Nanbando\Core\Database\ReadonlyDatabase;
 use Nanbando\Core\Plugin\PluginInterface;
 use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Process\Process;
 
@@ -39,11 +41,61 @@ class MysqlPlugin implements PluginInterface
     public function configureOptionsResolver(OptionsResolver $optionsResolver)
     {
         $optionsResolver->setRequired(['username', 'database'])
-            ->setDefault('password', null)
+            ->setDefault('databaseUrl', null)
             ->setDefault('host', null)
             ->setDefault('port', null)
             ->setDefault('exportOptions', null)
             ->setDefault('importOptions', null);
+
+        $optionsResolver->setDefault('username', function (Options $options) {
+            /** @var string[] $parts */
+            $parts = parse_url($options['databaseUrl']);
+            if ('mysql' !== $parts['scheme']) {
+                return null;
+            }
+
+            return $parts['user'];
+        });
+
+        $optionsResolver->setDefault('database', function (Options $options) {
+            /** @var string[] $parts */
+            $parts = parse_url($options['databaseUrl']);
+            if ('mysql' !== $parts['scheme']) {
+                return null;
+            }
+
+            return ltrim($parts['path'], '/');
+        });
+
+        $optionsResolver->setDefault('host', function (Options $options) {
+            /** @var string[] $parts */
+            $parts = parse_url($options['databaseUrl']);
+            if ('mysql' !== $parts['scheme']) {
+                return null;
+            }
+
+            return $parts['host'];
+        });
+
+        $optionsResolver->setDefault('port', function (Options $options) {
+            /** @var string[] $parts */
+            $parts = parse_url($options['databaseUrl']);
+            if ('mysql' !== $parts['scheme']) {
+                return null;
+            }
+
+            return $parts['port'];
+        });
+
+        $optionsResolver->setDefault('password', function (Options $options) {
+            /** @var string[] $parts */
+            $parts = parse_url($options['databaseUrl']);
+            if ('mysql' !== $parts['scheme']) {
+                return null;
+            }
+
+            return $parts['pass'];
+        });
     }
 
     /**
