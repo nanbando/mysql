@@ -3,15 +3,11 @@
     "description": "Nanando-Plugin to backup mysql databases",
     "type": "plugin",
     "require": {
-        "symfony/process": "^3.0"
+        "symfony/process": "^5.2"
     },
     "require-dev": {
         "nanbando/core": "^0.1|dev-master",
         "dflydev/embedded-composer": "@dev",
-        "puli/repository": "@dev",
-        "puli/discovery": "@dev",
-        "puli/url-generator": "@dev",
-        "puli/manager": "@dev",
 
         "phpunit/phpunit": "^5.3"
     },
@@ -24,7 +20,14 @@
     "authors": [
         {
             "name": "Johannes Wachter",
-            "email": "johannes.wachter@massiveart.at"
+            "email": "johannes@sulu.io"
         }
-    ]
+    ],
+    "extra": {
+        "nanbando": {
+            "bundle-classes": [
+                "Nanbando\\Plugin\\Mysql\\NanbandoMysqlBundle"
+            ]
+        }
+    }
 }
