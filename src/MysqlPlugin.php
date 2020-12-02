@@ -56,7 +56,7 @@ class MysqlPlugin implements PluginInterface
         );
 
         $tempFile = $this->temporaryFileSystem->createTemporaryFile('mysql');
-        $process = new Process($this->getExportCommand($parameter, $tempFile));
+        $process = Process::fromShellCommandline($this->getExportCommand($parameter, $tempFile));
         $process->run();
 
         while ($process->isRunning()) {
@@ -84,7 +84,7 @@ class MysqlPlugin implements PluginInterface
         $tempFile = $this->temporaryFileSystem->createTemporaryFile('mysql');
         file_put_contents($tempFile, $source->read('dump.sql'));
 
-        $process = new Process($this->getImportCommand($parameter, $tempFile));
+        $process = Process::fromShellCommandline($this->getImportCommand($parameter, $tempFile));
         $process->run();
 
         while ($process->isRunning()) {
