@@ -117,7 +117,6 @@ class MysqlPlugin implements PluginInterface
 
         $handler = fopen($tempFile, 'r');
         $destination->putStream('dump.sql', $handler);
-        fclose($handler);
     }
 
     /**
