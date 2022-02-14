@@ -3,7 +3,7 @@
     "description": "Nanando-Plugin to backup mysql databases",
     "type": "plugin",
     "require": {
-        "symfony/process": "^5.2"
+        "symfony/process": "^5.2 || ^6.0"
     },
     "require-dev": {
         "nanbando/core": "^0.1|dev-master",
