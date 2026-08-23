@@ -111,8 +111,15 @@ class MysqlPlugin implements PluginInterface
         $process = Process::fromShellCommandline($this->getExportCommand($parameter, $tempFile));
         $process->run();
 
-        while ($process->isRunning()) {
-            // waiting for process to finish
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Export failed with exit-code %s: "%s" %s',
+                    $process->getExitCode(),
+                    $this->getExportCommand($parameter, 'dump.sql', true),
+                    $process->getErrorOutput()
+                )
+            );
         }
 
         $handler = fopen($tempFile, 'r');
@@ -138,8 +145,15 @@ class MysqlPlugin implements PluginInterface
         $process = Process::fromShellCommandline($this->getImportCommand($parameter, $tempFile));
         $process->run();
 
-        while ($process->isRunning()) {
-            // waiting for process to finish
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Import failed with exit-code %s: "%s" %s',
+                    $process->getExitCode(),
+                    $this->getImportCommand($parameter, 'dump.sql', true),
+                    $process->getErrorOutput()
+                )
+            );
         }
     }
 
